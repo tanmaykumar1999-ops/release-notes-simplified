@@ -4,6 +4,7 @@
   "description": "fetches and simplifies Java release notes using claude AI",
   "main": "index.js",
   "scripts": {
+    "postinstall": "prisma generate",
     "start": "node -r tsx/cjs index.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
