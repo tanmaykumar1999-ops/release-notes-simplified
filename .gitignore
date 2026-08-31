@@ -1,0 +1,12 @@
+.env
+.env.local
+.env.*.local
+
+node_modules
+
+/generated/prisma
+
+.DS_Store
+**/.DS_Store
+
+*.lognode_modules/

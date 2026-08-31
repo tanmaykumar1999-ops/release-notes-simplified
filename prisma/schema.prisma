@@ -1,0 +1,22 @@
+generator client {
+  provider               = "prisma-client"
+  output                 = "../generated/prisma"
+  moduleFormat           = "cjs"
+  generatedFileExtension = "cts"
+  importFileExtension    = "cjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model SimplifiedJava {
+  id             Int      @id @default(autoincrement())
+  version        String
+  language       String
+  releaseDate    DateTime
+  rawData        String
+  simplifiedData String?
+  createdAt      DateTime @default(now())
+  url            String   @unique
+}

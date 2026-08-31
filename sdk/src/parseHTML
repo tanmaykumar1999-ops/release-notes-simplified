@@ -1,0 +1,86 @@
+/**
+ * parse-release-notes.js
+ * =======================
+ * Pure HTML -> JSON parser for one Oracle JDK release notes page.
+ *
+ * Deliberately has NO fetch() calls and no awareness of URLs beyond the
+ * one string it's told to label output with. It only transforms an HTML
+ * string you hand it into structured data. That separation is the whole
+ * point: this function can be unit-tested by feeding it a saved .html
+ * fixture and asserting on the JSON it returns — no network, no mocking,
+ * no dependency on fetch-latest-java-release.js at all.
+ */
+
+const cheerio = require('cheerio');
+
+/**
+ * @param {string} html   Raw HTML of a release notes page (already fetched elsewhere)
+ * @param {string} url    The URL the HTML came from — only used to label the output
+ * @returns {{url: string, title: string, sections: Array<{heading: string, content: string[]}>}}
+ */
+function parseReleaseNotesToJson(html, url) {
+  const $ = cheerio.load(html);
+
+  // Every oracle.com page has a hidden "Skip to content" accessibility
+  // link that jumps to id="maincontent". Scoping our search to that
+  // element reliably excludes the top nav/quicklinks and footer
+  // boilerplate that surrounds the actual release notes content.
+  const root = $('#maincontent').length ? $('#maincontent') : $('body');
+
+  // The page's own heading, e.g. "JDK 26.0.2 Release Notes"
+  const title = root.find('h2').first().text().trim();
+
+  const sections = [];
+  let currentSection = null; // section we're currently appending content to
+
+  // Selecting headings + content tags together in one .find() call
+  // returns them in DOCUMENT ORDER, so a single left-to-right pass is
+  // enough: every time we hit a heading we open a new section, and every
+  // paragraph/list/table we hit after that gets pushed onto it — until
+  // the next heading opens a new one.
+  root.find('h3, h4, h5, p, ul, ol, table').each((_, el) => {
+    const tag = el.tagName.toLowerCase();
+    const $el = $(el);
+
+    if (/^h[3-5]$/.test(tag)) {
+      const heading = $el.text().trim();
+      if (heading) {
+        currentSection = { heading, content: [] };
+        sections.push(currentSection);
+      }
+      return;
+    }
+
+    // Content that appears before the first heading (page title,
+    // breadcrumb, publish date) isn't part of a numbered section — skip it.
+    if (!currentSection) return;
+
+    if (tag === 'p') {
+      const text = $el.text().replace(/\s+/g, ' ').trim();
+      if (text) currentSection.content.push(text);
+
+    } else if (tag === 'ul' || tag === 'ol') {
+      // '> li' = direct children only, so a list nested inside another
+      // list item doesn't get its items double-counted.
+      $el.find('> li').each((__, li) => {
+        const text = $(li).text().replace(/\s+/g, ' ').trim();
+        if (text) currentSection.content.push(`• ${text}`);
+      });
+
+    } else if (tag === 'table') {
+      // Flatten each row into "cell | cell | cell" — enough structure to
+      // stay readable without building a fully nested table object.
+      $el.find('tr').each((__, tr) => {
+        const cells = $(tr)
+          .find('th, td')
+          .map((___, cell) => $(cell).text().replace(/\s+/g, ' ').trim())
+          .get();
+        if (cells.length) currentSection.content.push(cells.join(' | '));
+      });
+    }
+  });
+
+  return { url, title, sections };
+}
+
+module.exports = { parseReleaseNotesToJson };
