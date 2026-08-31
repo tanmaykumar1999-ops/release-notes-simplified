@@ -26,7 +26,7 @@ app.get('/releases/java', async (req, res) => {
 
 // Called only by the GitHub Actions cron.
 app.post('/internal/sync', async (req, res) => {
-  if (req.get('Authorization') !== `Bearer ${process.env.SYNC_SECRET}`) {
+  if (req.get('x-refresh-secret') !== process.env.REFRESH_SECRET) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
   try {
