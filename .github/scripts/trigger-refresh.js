@@ -2,7 +2,7 @@ async function main() {
   const url = process.env.REFRESH_URL;
   const secret = process.env.REFRESH_SECRET;
 
-  const res = await fetch(url, {
+  const res = await fetch(`${url}/internal/sync`, {
     method: 'POST',
     headers: { 'x-refresh-secret': secret }
   });
