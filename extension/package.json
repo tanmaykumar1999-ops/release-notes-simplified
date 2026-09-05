@@ -1,7 +1,7 @@
 {
   "name": "release-notes-simplified",
   "displayName": "Release Notes Simplified",
-  "description": "View simplified release notes for Java. We will be adding more languages soon.",
+  "description": "View simplified latest release notes for Java. We will be adding more languages soon.",
   "version": "0.0.1",
   "engines": { "vscode": "^1.85.0" },
   "categories": ["Other"],
