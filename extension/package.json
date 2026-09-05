@@ -9,8 +9,8 @@
   "contributes": {
     "commands": [
       {
-        "command": "releaseNotesSimplified.showLanguages",
-        "title": "Release Notes Simplified: Show Languages"
+        "command": "releaseNotesSimplified.showJava",
+        "title": "Release Notes Simplified: Show Java"
       }
     ]
   }
