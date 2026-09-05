@@ -1,5 +1,3 @@
-const { simplifierCpp, simplifierJava } = require("./simplifier");
-
 const SYSTEM_PROMPT = `You are a developer education expert. Your job is to take official programming language release notes — which are often written in dense, spec-heavy technical language — and rewrite them so that a working developer can immediately understand what changed, why it matters, and how to use it.
  
 Always respond with ONLY valid JSON matching this exact structure, with no markdown fences or extra text:
