@@ -2,12 +2,8 @@ const vscode = require('vscode');
 const { fetchSimplifiedNotes } = require('./api');
 const { getLoadingHtml, getWebviewHtml, getErrorHtml } = require('./webview');
 
-async function handleShowLanguages(context) {
-  const language = await vscode.window.showQuickPick(
-    ['Java', 'Python', 'Golang'],
-    { placeHolder: 'Select a language to view simplified release notes' }
-  );
-  if (!language) return; // user pressed Esc
+async function handleShowJavaNotes(context) {
+  const language = 'Java';
 
   const panel = vscode.window.createWebviewPanel(
     'releaseNotesSimplified',
@@ -26,4 +22,4 @@ async function handleShowLanguages(context) {
   }
 }
 
-module.exports = { handleShowLanguages };
+module.exports = { handleShowJavaNotes };
