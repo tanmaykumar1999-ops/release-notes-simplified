@@ -5,7 +5,12 @@ async function fetchSimplifiedNotes(language) {
   if (!res.ok) {
     throw new Error(`Backend returned ${res.status}`);
   }
-  return res.json(); // { version, simplifiedSummary, updatedAt }
+  const releases = await res.json(); // array, newest first
+  const latest = releases[0];
+  if (!latest) {
+    throw new Error('No release data available yet.');
+  }
+  return latest; // { version, simplifiedData: { tagline, features, deprecations, migrationTips }, createdAt, ... }
 }
 
 module.exports = { fetchSimplifiedNotes };
